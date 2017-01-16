@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GitTask</string>
+    <string name="reposename">Repos Name :</string>
+    <string name="description">Description :</string>
+    <string name="usernameloged">User Log :</string>
+    <string name="repositories">Repositories</string>
+    <string name="choose">Choose Url Y Want</string>
+    <string name="repository">repository</string>
+    <string name="owner">Owner</string>
+</resources>
