@@ -48,19 +48,12 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     private List<Model> disList = new ArrayList<>();
     private Adapter mAdapter;
+int DataLength=0;
+    int num = 2;
 
-    int num = 11;
-
-
-
-    public static String TAG = "EndlessScrollListener";
-
-    private int previousTotal = 0; // The total number of items in the dataset after the last load
-    private boolean loading = true; // True if we are still waiting for the last set of data to load.
-    private int visibleThreshold = 10; // The minimum amount of items to have below your current scroll position before loading more.
+    private int findLastVisibleItemPosition ;
     int firstVisibleItem, visibleItemCount, totalItemCount;
-
-    private int currentPage = 1;
+    Boolean flag=true;
 
     RecyclerViewPositionHelper mRecyclerViewHelper;
 
@@ -93,23 +86,17 @@ public class MainActivity extends AppCompatActivity {
                 visibleItemCount = recyclerView.getChildCount();
                 totalItemCount = mRecyclerViewHelper.getItemCount();
                 firstVisibleItem = mRecyclerViewHelper.findFirstVisibleItemPosition();
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
+                findLastVisibleItemPosition=mRecyclerViewHelper.findLastCompletelyVisibleItemPosition();
+                //System.out.println(findLastVisibleItemPosition+"jhjgjhg");
+                if (findLastVisibleItemPosition
+                        == DataLength-1&&flag) {
                     // End has been reached
                     // Do something
-                    currentPage++;
-
                     LoadData(2);
                     PagesNum = num + "";
-                    num += 10;
+                    num ++;
 
-                    loading = true;
+
                 }
 
 
@@ -120,24 +107,27 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-        System.out.println(isNetworkConnected() + "gj");
-        if (isNetworkConnected()) {
+
+
             activity_main.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    disList.clear(); //clear list
-                    mAdapter.notifyDataSetChanged();
-                    PagesNum = "1";
-                    LoadData(2);
+                    if (isNetworkConnected()) {
+                        disList.clear(); //clear list
+                        mAdapter.notifyDataSetChanged();
+                        num=2;
+                        PagesNum = "1";
+                        DataLength=0;
+                        LoadData(2);
 
-                    Toast.makeText(MainActivity.this, "Refresh", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Refresh", Toast.LENGTH_SHORT).show();
+                    } else {
+                        activity_main.setRefreshing(false);
+                        Toast.makeText(MainActivity.this, "No Network Connected", Toast.LENGTH_SHORT).show();
+                    }
                 }
-
             });
-        } else {
-            activity_main.setRefreshing(false);
-            Toast.makeText(MainActivity.this, "No Network Connected", Toast.LENGTH_SHORT).show();
-        }
+
 
 
     }
@@ -163,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(URL).client(client).
                 addConverterFactory(GsonConverterFactory.create()).build();
         InterfaceService AllData = retrofit.create(InterfaceService.class);//conected api
+        System.out.println(PagesNum+"jhjgjhg");
         Call<List<ResultModle>> connection = AllData.getData(("repos?page=" + PagesNum + "&&per_page=10&?access_token=563052695d89c1208f90ff817e2896b723f0e79c"));
         if (request == 1) {
             progressDialog = new ProgressDialog(MainActivity.this);
@@ -179,7 +170,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     activity_main.setRefreshing(false);
                 }
+
                 if (response != null) {
+                    DataLength+=response.body().size();
                     try {
                         for (int i = 0; i < response.body().size(); i++) {
 
@@ -193,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "API rate limit exceeded", Toast.LENGTH_LONG).show();
 
                     }
+                }else {
+                    flag=false;
                 }
             }
 

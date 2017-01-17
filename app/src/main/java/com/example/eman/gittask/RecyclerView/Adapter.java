@@ -43,9 +43,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         final Model DisModel = displayList.get(position);
         if (DisModel.getName() != null) {
             holder.Repos.setText(DisModel.getName());
+        }else {
+            holder.Repos.setText("Not Found");
         }
         if (DisModel.getLogin() != null) {
             holder.Log.setText(DisModel.getLogin());
+        }else {
+            holder.Log.setText("Not Found");
         }
         holder.Description.setText(DisModel.getDescription());
         if (DisModel.getFork() == false || DisModel.getFork() == null) {

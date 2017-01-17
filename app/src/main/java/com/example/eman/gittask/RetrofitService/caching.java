@@ -55,6 +55,7 @@ public class caching  {
             if (work) {
 
                 int maxAge = 60 * 60 * 24 * 28; // read from cache for 1 minute
+
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .build();
