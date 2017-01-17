@@ -5,6 +5,9 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Url;
+
+import static com.example.eman.gittask.MainActivity.PagesNum;
 
 /**
  * Created by Eman on 1/16/2017.
@@ -13,7 +16,8 @@ import retrofit2.http.GET;
 
 public interface InterfaceService {
 
-    @GET("repos")
-    Call<List<ResultModle>> getData();
+
+    @GET
+    Call<List<ResultModle>> getData(@Url String url);
 }
 
